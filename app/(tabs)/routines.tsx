@@ -6,16 +6,15 @@ import {
   TextInput
 } from "react-native";
 
-const Index = () => {
+const Routine = () => {
   return (
     <ScreenContainer>
-      <Text style={styles.title}>GymTracker!</Text>
-      <Text style={styles.subtitle}>Registrar tus entrenamientos nunca fue tan fácil</Text>
+      <Text style={styles.title}>Rutinas</Text>
+      <Text style={styles.subtitle}>Tus rutinas en un solo lugar</Text>
       <Ionicons name="barbell" size={150} color='black' /> 
-      <TextInput style={styles.input} defaultValue="Ingresa tu nombre" />
+      <TextInput style={styles.input} defaultValue="Ingresa el nombre de la rutina" />
     </ScreenContainer>
   );
 }
 
-export default Index;
-
+export default Routine;
