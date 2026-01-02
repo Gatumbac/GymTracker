@@ -1,62 +1,69 @@
+import Button from '@components/Button';
+import ScreenContainer from '@components/ScreenContainer';
+import TextInput from '@components/TextInput';
+import { commonStyles } from '@constants/styles';
 import { useAuth } from '@hooks/useAuth';
+import { getErrorMessage } from '@utils/error';
+import { LoginValidationErrors, validateLoginData } from '@utils/validation';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Text } from 'react-native';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<LoginValidationErrors>({});
   const { signIn } = useAuth();
   const router = useRouter();
 
   const handleLogin = async () => {
-    console.log(username, password);
-    if (!username || !password) {
-      Alert.alert('Error', 'Por favor ingresa usuario y contraseña');
+    // Validar datos antes de enviar
+    const validationErrors = validateLoginData({ username, password });
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
+    // Limpiar errores si la validación pasa
+    setErrors({});
     setIsSubmitting(true);
     try {
       await signIn({ username, password });
-    } catch (error: any) {
-      Alert.alert('Login Fallido', 'Verifica tus credenciales');
+    } catch (error) {
+      const message = getErrorMessage(error);
+      Alert.alert('Login Fallido', message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleRegister = () => {
+    router.push('/register');
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>GymTracker 🏋️</Text>
+    <ScreenContainer centered>
+      <Text style={commonStyles.title}>GymTracker 🏋️</Text>
       <TextInput
-        style={styles.input}
+        label="Usuario"
         onChangeText={setUsername}
         value={username}
-        placeholder="Username"
+        placeholder="Nombre de usuario"
         autoCapitalize="none"
+        error={errors.username}
       />
       <TextInput
-        style={styles.input}
+        label="Contraseña"
         onChangeText={setPassword}
         value={password}
-        placeholder="Password"
+        placeholder="Tu contraseña"
         secureTextEntry={true}
+        error={errors.password}
       />
-      <View style={styles.buttonContainer}>
-        <Button title={isSubmitting ? "Cargando..." : "Iniciar Sesión"} onPress={handleLogin} disabled={isSubmitting} />
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button title="Registrarse" onPress={() => router.push('/register')} disabled={isSubmitting} color="#469b76" />
-      </View>
-    </View>
+      <Button title="Iniciar Sesión" onPress={handleLogin} isLoading={isSubmitting} />
+      <Button title="Registrarse" onPress={handleRegister} disabled={isSubmitting} variant="secondary" />
+    </ScreenContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
-  title: { fontSize: 24, marginBottom: 20, textAlign: 'center', fontWeight: 'bold' },
-  input: { height: 50, borderColor: 'gray', borderWidth: 1, marginBottom: 12, padding: 10, borderRadius: 5 },
-  buttonContainer: { marginTop: 10 }
-});

@@ -1,5 +1,6 @@
+import { theme } from '@/constants/styles';
 import { ReactNode } from 'react';
-import { StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
 
 interface ButtonProps {
   title?: string;
@@ -8,7 +9,8 @@ interface ButtonProps {
   style?: ViewStyle;
   textStyle?: TextStyle;
   disabled?: boolean;
-  variant?: 'primary' | 'secondary' | 'outline';
+  isLoading?: boolean;
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
 }
 
 export default function Button({
@@ -18,12 +20,13 @@ export default function Button({
   style,
   textStyle,
   disabled = false,
+  isLoading = false,
   variant = 'primary',
 }: ButtonProps) {
   const buttonStyle = [
     styles.base,
     styles[variant],
-    disabled && styles.disabled,
+    (disabled || isLoading) && styles.disabled,
     style,
   ];
 
@@ -34,22 +37,33 @@ export default function Button({
     textStyle,
   ];
 
+  // Determinar color del spinner según variante
+  const getSpinnerColor = () => {
+    if (variant === 'outline') {
+      return theme.colors.primary;
+    }
+    return theme.colors.text.inverse;
+  };
+
   return (
     <TouchableOpacity
       style={buttonStyle}
       onPress={onPress}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       activeOpacity={0.7}
     >
-      {title ? <Text style={buttonTextStyle}>{title}</Text> : children}
+      {isLoading ? (
+        <ActivityIndicator color={getSpinnerColor()} />
+      ) : (
+        title ? <Text style={buttonTextStyle}>{title}</Text> : children
+      )}
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   base: {
-    width: '80%', 
-    maxWidth: 300, 
+    width: '100%',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -58,34 +72,40 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   primary: {
-    backgroundColor: '#007AFF', // Azul estándar
+    backgroundColor: theme.colors.primary,
   },
   secondary: {
-    backgroundColor: '#6B7280', // Gris
+    backgroundColor: theme.colors.secondary,
   },
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: theme.colors.primary,
+  },
+  danger: {
+    backgroundColor: theme.colors.error,
   },
   disabled: {
-    backgroundColor: '#D1D5DB',
-    borderColor: '#D1D5DB',
+    backgroundColor: theme.colors.gray[300],
+    borderColor: theme.colors.gray[300],
   },
   textBase: {
     fontSize: 16,
     fontWeight: '600',
   },
   primaryText: {
-    color: 'white',
+    color: theme.colors.text.inverse,
   },
   secondaryText: {
-    color: 'white',
+    color: theme.colors.text.inverse,
   },
   outlineText: {
-    color: '#007AFF',
+    color: theme.colors.primary,
+  },
+  dangerText: {
+    color: theme.colors.text.inverse,
   },
   disabledText: {
-    color: '#9CA3AF',
+    color: theme.colors.text.disabled,
   },
 });

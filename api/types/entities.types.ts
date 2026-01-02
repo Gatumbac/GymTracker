@@ -62,6 +62,22 @@ export interface User {
   last_name?: string;
 }
 
+export interface UserProfile extends User {
+  birth_date: string;
+  height: string;
+  weight: string;
+  bio: string;
+  image_url?: string | null;
+}
+
+export interface UserProfileRequest {
+  birth_date: string;
+  height: string;
+  weight: string;
+  bio: string;
+  image_url?: string | null;
+}
+
 export interface RegisterRequest {
   username: string;
   email?: string;

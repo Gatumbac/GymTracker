@@ -61,13 +61,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       const response = await authEndpoints.login(credentials);
       const { access, refresh } = response.data;
-
+      console.log('Access token:', access);
+      console.log('Refresh token:', refresh);
       await AsyncStorage.setItem('authToken', access);
       await AsyncStorage.setItem('refreshToken', refresh);
       updateCachedToken(access);
       setSession(access);
     } catch (error) {
-      console.error('Error al hacer login', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await authEndpoints.register(data);
     } catch (error) {
-      console.error('Error al hacer registro', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }

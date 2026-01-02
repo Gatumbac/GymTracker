@@ -19,6 +19,12 @@
       "@api/*": [
         "./api/*"
       ],
+      "@utils/*": [
+        "./utils/*"
+      ],
+      "@components/*": [
+        "./components/*"
+      ]
     }
   },
   "include": [

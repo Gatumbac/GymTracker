@@ -1,7 +1,13 @@
+import Button from '@components/Button';
+import ScreenContainer from '@components/ScreenContainer';
+import TextInput from '@components/TextInput';
+import { commonStyles } from '@constants/styles';
 import { useAuth } from '@hooks/useAuth';
+import { getErrorMessage } from '@utils/error';
+import { RegisterValidationErrors, validateRegisterData } from '@utils/validation';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Button, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Text } from 'react-native';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -10,16 +16,28 @@ export default function Register() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<RegisterValidationErrors>({});
 
   const { signUp } = useAuth();
   const router = useRouter();
 
   const handleRegister = async () => {
-    if (!username || !password) {
-      Alert.alert('Error', 'Usuario y contraseña son obligatorios');
+    // Validar datos antes de enviar
+    const validationErrors = validateRegisterData({
+      username,
+      email,
+      password,
+      first_name: firstName,
+      last_name: lastName,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
+    // Limpiar errores si la validación pasa
+    setErrors({});
     setIsSubmitting(true);
     try {
       await signUp({
@@ -30,77 +48,75 @@ export default function Register() {
         last_name: lastName
       });
       Alert.alert('Éxito', 'Cuenta creada correctamente. Por favor inicia sesión.', [
-        { text: 'OK', onPress: () => router.back() }
+        {
+          text: 'OK',
+          onPress: () => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/login');
+            }
+          }
+        }
       ]);
-    } catch (error: any) {
-      Alert.alert('Error', 'No se pudo crear la cuenta. Intenta con otro usuario.');
+    } catch (error) {
+      const message = getErrorMessage(error);
+      Alert.alert('Error', message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Crear Cuenta</Text>
+    <ScreenContainer centered>
+      <Text style={commonStyles.title}>Crear Cuenta</Text>
 
-      <Text style={styles.label}>Usuario *</Text>
       <TextInput
-        style={styles.input}
+        label="Usuario *"
         onChangeText={setUsername}
         value={username}
         placeholder="Tu usuario para GymTracker"
         autoCapitalize="none"
+        error={errors.username}
       />
 
-      <Text style={styles.label}>Email *</Text>
       <TextInput
-        style={styles.input}
+        label="Email *"
         onChangeText={setEmail}
         value={email}
         placeholder="Tu email"
         autoCapitalize="none"
         keyboardType="email-address"
+        error={errors.email}
       />
 
-      <Text style={styles.label}>Contraseña *</Text>
       <TextInput
-        style={styles.input}
+        label="Contraseña *"
         onChangeText={setPassword}
         value={password}
         placeholder="Tu contraseña"
         secureTextEntry
+        error={errors.password}
       />
 
-      <Text style={styles.label}>Nombre</Text>
       <TextInput
-        style={styles.input}
+        label="Nombre *"
         onChangeText={setFirstName}
         value={firstName}
         placeholder="Tu nombre"
+        error={errors.first_name}
       />
 
-      <Text style={styles.label}>Apellido</Text>
       <TextInput
-        style={styles.input}
+        label="Apellido *"
         onChangeText={setLastName}
         value={lastName}
         placeholder="Tu apellido"
+        error={errors.last_name}
       />
 
-      <View style={styles.buttonContainer}>
-        <Button title={isSubmitting ? "Registrando..." : "Registrarse"} onPress={handleRegister} disabled={isSubmitting} color="#469b76" />
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button title="Volver al Login" onPress={() => router.back()} disabled={isSubmitting} color="#666" />
-      </View>
-    </ScrollView>
+      <Button title="Registrarse" onPress={handleRegister} isLoading={isSubmitting} variant="primary" />
+      <Button title="Volver al Login" onPress={() => router.back()} disabled={isSubmitting} variant="secondary" />
+    </ScreenContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flexGrow: 1, justifyContent: 'center', padding: 20 },
-  title: { fontSize: 24, marginBottom: 20, textAlign: 'center', fontWeight: 'bold' },
-  label: { marginBottom: 5, fontWeight: 'bold' },
-  input: { height: 50, borderColor: 'gray', borderWidth: 1, marginBottom: 12, padding: 10, borderRadius: 5 },
-  buttonContainer: { marginTop: 10 }
-});

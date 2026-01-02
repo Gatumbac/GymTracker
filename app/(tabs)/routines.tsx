@@ -1,5 +1,5 @@
 import ScreenContainer from "@/components/ScreenContainer";
-import { styles } from "@constants/styles";
+import { commonStyles } from "@constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import {
   Text,
@@ -9,10 +9,10 @@ import {
 const Routine = () => {
   return (
     <ScreenContainer>
-      <Text style={styles.title}>Rutinas</Text>
-      <Text style={styles.subtitle}>Tus rutinas en un solo lugar</Text>
-      <Ionicons name="barbell" size={150} color='black' /> 
-      <TextInput style={styles.input} defaultValue="Ingresa el nombre de la rutina" />
+      <Text style={commonStyles.title}>Rutinas</Text>
+      <Text style={commonStyles.subtitle}>Tus rutinas en un solo lugar</Text>
+      <Ionicons name="barbell" size={150} color='black' />
+      <TextInput style={commonStyles.input} defaultValue="Ingresa el nombre de la rutina" />
     </ScreenContainer>
   );
 }
