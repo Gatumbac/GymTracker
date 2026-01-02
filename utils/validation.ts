@@ -179,3 +179,49 @@ export const validateRegisterData = (data: {
 
   return errors;
 };
+
+export interface RoutineStep1ValidationErrors {
+  name?: string;
+  days?: string;
+}
+
+export const validateRoutineStep1 = (data: {
+  name: string;
+  selectedDays: number;
+}): RoutineStep1ValidationErrors => {
+  const errors: RoutineStep1ValidationErrors = {};
+
+  if (!data.name.trim()) {
+    errors.name = 'El nombre es requerido';
+  } else if (data.name.trim().length < 3) {
+    errors.name = 'Mínimo 3 caracteres';
+  } else if (data.name.length > 100) {
+    errors.name = 'Máximo 100 caracteres';
+  }
+
+  if (data.selectedDays === 0) {
+    errors.days = 'Selecciona al menos un día';
+  }
+
+  return errors;
+};
+
+export interface ExerciseConfigValidation {
+  isValid: boolean;
+  error?: string;
+}
+
+export const validateExerciseConfig = (config: {
+  target_sets?: number;
+  target_reps?: number;
+  rest_time_seconds?: number;
+}): ExerciseConfigValidation => {
+  if (!config.target_sets || !config.target_reps || config.rest_time_seconds === undefined) {
+    return {
+      isValid: false,
+      error: 'Completa todos los campos',
+    };
+  }
+
+  return { isValid: true };
+};

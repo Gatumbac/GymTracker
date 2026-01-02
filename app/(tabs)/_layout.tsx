@@ -67,7 +67,7 @@ export default function AppLayout() {
         name="routines"
         options={{
           title: 'Rutinas',
-          headerTitle: 'Mis Rutinas',
+          headerTitle: 'Rutinas',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'list' : 'list-outline'}
