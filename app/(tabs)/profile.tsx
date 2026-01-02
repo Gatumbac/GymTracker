@@ -1,6 +1,7 @@
 import Button from "@/components/Button";
 import ScreenContainer from "@/components/ScreenContainer";
 import TextInput from "@/components/TextInput";
+import LoadingScreen from '@components/LoadingScreen';
 import { commonStyles, theme } from "@constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@hooks/useAuth";
@@ -9,7 +10,6 @@ import { getErrorMessage } from "@utils/error";
 import { ProfileValidationErrors, validateProfileData } from "@utils/validation";
 import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Image,
   StyleSheet,
@@ -103,12 +103,7 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <ScreenContainer>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={styles.loadingText}>Cargando perfil...</Text>
-        </View>
-      </ScreenContainer>
+      <LoadingScreen text="Cargando perfil..." />
     );
   }
 
@@ -292,16 +287,6 @@ const Profile = () => {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: theme.spacing.md,
-    fontSize: theme.typography.sizes.md,
-    color: theme.colors.text.secondary,
-  },
   avatarContainer: {
     alignItems: 'center',
     marginBottom: theme.spacing.lg,

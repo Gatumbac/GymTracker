@@ -70,6 +70,20 @@ export default function AppLayout() {
           headerTitle: 'Mis Rutinas',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
+              name={focused ? 'list' : 'list-outline'}
+              size={28}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="exercises"
+        options={{
+          title: 'Ejercicios',
+          headerTitle: 'Ejercicios',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
               name={focused ? 'barbell' : 'barbell-outline'}
               size={28}
               color={color}

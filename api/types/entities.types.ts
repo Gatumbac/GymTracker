@@ -12,10 +12,12 @@ export enum DayOfWeek {
 export interface Exercise {
   id: number;
   name: string;
-  description?: string | null;
-  image_url?: string | null;
-  muscle_group_name: string;
-  exercise_type_name: string;
+  description: string | null;
+  image_url: string | null;
+  muscle_group: number;
+  exercise_type: number;
+  muscle_group_name?: string;
+  exercise_type_name?: string;
 }
 
 export interface ExerciseType {
