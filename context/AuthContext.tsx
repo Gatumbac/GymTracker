@@ -1,40 +1,98 @@
-import { supabase } from '@lib/supabase';
-import { Session, User } from '@supabase/supabase-js';
+import { clearCachedToken, setUnauthorizedHandler, updateCachedToken } from '@api/client';
+import { authEndpoints } from '@api/endpoints/auth';
+import { LoginRequest, RegisterRequest } from '@api/types/entities.types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useEffect, useState } from 'react';
 
 type AuthContextType = {
-  session: Session | null;
-  user: User | null;
-  loading: boolean;
+  signIn: (credentials: LoginRequest) => Promise<void>;
+  signUp: (data: RegisterRequest) => Promise<void>;
+  signOut: () => void;
+  session: string | null;
+  isLoading: boolean;
 };
 
-export const AuthContext = createContext<AuthContextType>({ session: null, user: null, loading: true });
+export const AuthContext = createContext<AuthContextType>({
+  signIn: async () => { },
+  signUp: async () => { },
+  signOut: () => { },
+  session: null,
+  isLoading: false,
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const signOut = async () => {
+    try {
+      setSession(null);
+      clearCachedToken();
+      await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem('refreshToken');
+    } catch (error) {
+      console.error('Error al hacer logout', error);
+    }
+  };
 
   useEffect(() => {
-    // 1. Verificar sesión inicial al abrir la app
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    // handler para el api client
+    setUnauthorizedHandler(signOut);
 
-    // 2. Escuchar cambios (login, logout, registro)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    const loadStorageData = async () => {
+      try {
+        const authData = await AsyncStorage.getItem('authToken');
+        if (authData) {
+          updateCachedToken(authData);
+          setSession(authData);
+        }
+      } catch (e) {
+        console.error('Error al obtener el token desde el AsyncStorage', e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    return () => subscription.unsubscribe();
+    loadStorageData();
   }, []);
 
+  const signIn = async (credentials: LoginRequest) => {
+    try {
+      setIsLoading(true);
+      const response = await authEndpoints.login(credentials);
+      const { access, refresh } = response.data;
+
+      await AsyncStorage.setItem('authToken', access);
+      await AsyncStorage.setItem('refreshToken', refresh);
+      updateCachedToken(access);
+      setSession(access);
+    } catch (error) {
+      console.error('Error al hacer login', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signUp = async (data: RegisterRequest) => {
+    setIsLoading(true);
+    try {
+      await authEndpoints.register(data);
+    } catch (error) {
+      console.error('Error al hacer registro', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ session, user, loading }}>
+    <AuthContext.Provider
+      value={{
+        signIn,
+        signUp,
+        signOut,
+        session,
+        isLoading,
+      }}>
       {children}
     </AuthContext.Provider>
   );

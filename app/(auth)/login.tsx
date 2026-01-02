@@ -1,43 +1,40 @@
-import { supabase } from '@lib/supabase';
+import { useAuth } from '@hooks/useAuth';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { signIn } = useAuth();
+  const router = useRouter();
 
-  async function signInWithEmail() {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  const handleLogin = async () => {
+    console.log(username, password);
+    if (!username || !password) {
+      Alert.alert('Error', 'Por favor ingresa usuario y contraseña');
+      return;
+    }
 
-    if (error) Alert.alert('Error', error.message);
-    setLoading(false);
-  }
-
-  async function signUpWithEmail() {
-    setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) Alert.alert('Error', error.message);
-    else Alert.alert('Éxito', 'Usuario creado. ¡Ahora puedes iniciar sesión!');
-    setLoading(false);
-  }
+    setIsSubmitting(true);
+    try {
+      await signIn({ username, password });
+    } catch (error: any) {
+      Alert.alert('Login Fallido', 'Verifica tus credenciales');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>GymTracker 🏋️</Text>
       <TextInput
         style={styles.input}
-        onChangeText={setEmail}
-        value={email}
-        placeholder="email@address.com"
+        onChangeText={setUsername}
+        value={username}
+        placeholder="Username"
         autoCapitalize="none"
       />
       <TextInput
@@ -48,10 +45,10 @@ export default function Login() {
         secureTextEntry={true}
       />
       <View style={styles.buttonContainer}>
-        <Button title="Iniciar Sesión" disabled={loading} onPress={signInWithEmail} />
+        <Button title={isSubmitting ? "Cargando..." : "Iniciar Sesión"} onPress={handleLogin} disabled={isSubmitting} />
       </View>
       <View style={styles.buttonContainer}>
-        <Button title="Registrarse" disabled={loading} onPress={signUpWithEmail} color="#469b76" />
+        <Button title="Registrarse" onPress={() => router.push('/register')} disabled={isSubmitting} color="#469b76" />
       </View>
     </View>
   );

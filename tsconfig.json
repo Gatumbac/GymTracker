@@ -7,10 +7,18 @@
       "@/*": [
         "./*"
       ],
-      "@lib/*": ["lib/*"],
-      "@context/*": ["context/*"],
-      "@constants/*": ["constants/*"],
-      "@hooks/*": ["hooks/*"],
+      "@context/*": [
+        "./context/*"
+      ],
+      "@constants/*": [
+        "./constants/*"
+      ],
+      "@hooks/*": [
+        "./hooks/*"
+      ],
+      "@api/*": [
+        "./api/*"
+      ],
     }
   },
   "include": [

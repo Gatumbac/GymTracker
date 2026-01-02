@@ -6,25 +6,25 @@ import { ActivityIndicator, View } from 'react-native';
 
 // Componente interno que maneja la navegación según el estado
 function InitialLayout() {
-  const { session, loading } = useAuth();
+  const { session, isLoading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
-    if (loading) return;
+    if (isLoading) return;
 
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!session && !inAuthGroup) {
-      // Si no hay sesión y no estamos en login, mandar a login
+      // Si no hay sesión y no estamos en auth, ir a login
       router.replace('/(auth)/login');
     } else if (session && inAuthGroup) {
-      // Si hay sesión y estamos en login, mandar al home
-      router.replace('/');
+      // Si hay sesión y estamos en auth, ir a tabs (home)
+      router.replace('/(tabs)');
     }
-  }, [session, loading, segments]);
+  }, [session, isLoading, segments]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />
