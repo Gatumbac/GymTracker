@@ -9,8 +9,7 @@ import { theme } from "@constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@hooks/useAuth";
 import { useProfile } from "@hooks/useProfile";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback } from "react";
+import { useRouter } from "expo-router";
 import {
   Alert,
   StyleSheet,
@@ -21,13 +20,7 @@ import {
 const Profile = () => {
   const router = useRouter();
   const { signOut } = useAuth();
-  const { profile, isLoading, refetch } = useProfile();
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch({ showLoading: false });
-    }, [refetch])
-  );
+  const { profile, isLoading } = useProfile();
 
   const handleLogout = () => {
     Alert.alert('Cerrar Sesión', '¿Estás seguro de que quieres cerrar sesión?', [

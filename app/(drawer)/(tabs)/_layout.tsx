@@ -57,7 +57,7 @@ export default function AppLayout() {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={focused ? 'fitness' : 'fitness-outline'}
+              name={focused ? 'home' : 'home-outline'}
               size={28}
               color={color}
             />

@@ -1,3 +1,4 @@
+import Button from "@/components/Button";
 import LoadingScreen from "@/components/LoadingScreen";
 import RoutineExerciseItem from "@/components/RoutineExerciseItem";
 import ScreenContainer from "@/components/ScreenContainer";
@@ -81,6 +82,12 @@ export default function RoutineDetailScreen() {
         .map((item) => (
           <RoutineExerciseItem key={item.id} item={item} />
         ))}
+
+      <Button
+        title="Volver"
+        onPress={() => router.back()}
+      />
+
     </ScreenContainer>
   );
 }
@@ -105,8 +112,8 @@ const styles = StyleSheet.create({
   description: {
     color: theme.colors.text.secondary,
     fontSize: theme.typography.sizes.md,
-    marginTop: theme.spacing.sm,
-    marginBottom: theme.spacing.xl,
+    marginTop: 0,
+    marginBottom: theme.spacing.lg,
     lineHeight: 22,
   },
   sectionTitle: {
@@ -129,7 +136,7 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.weights.bold,
     padding: theme.spacing.sm,
     borderRadius: theme.spacing.sm,
-    backgroundColor: theme.colors.secondaryDark,
+    backgroundColor: theme.colors.secondary,
     color: theme.colors.background,
   },
 });

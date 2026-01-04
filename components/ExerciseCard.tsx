@@ -5,16 +5,16 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface ExerciseCardProps {
   exercise: Exercise;
-  onPress?: () => void;
+  onPress: (exercise: Exercise) => void;
 }
 
 export default function ExerciseCard({ exercise, onPress }: ExerciseCardProps) {
+
   return (
     <TouchableOpacity
       style={styles.card}
-      onPress={onPress}
+      onPress={() => onPress(exercise)}
       activeOpacity={0.7}
-      disabled={!onPress}
     >
       <View style={styles.imageContainer}>
         {exercise.image_url ? (
@@ -32,7 +32,7 @@ export default function ExerciseCard({ exercise, onPress }: ExerciseCardProps) {
         <Text style={styles.name} numberOfLines={2}>
           {exercise.name}
         </Text>
-        <Text style={styles.description} numberOfLines={2}>
+        <Text style={styles.description} numberOfLines={3}>
           {exercise.description}
         </Text>
         <View style={styles.badges}>
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    height: 125,
+    height: 120,
   },
   imageContainer: {
     width: 110,

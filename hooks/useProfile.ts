@@ -1,52 +1,13 @@
-import { profileEndpoints } from '@/api/endpoints/profile';
-import { UserProfile, UserProfileRequest } from '@/api/types/entities.types';
-import { useCallback, useEffect, useState } from 'react';
+// hooks/useProfile.ts
+import { ProfileContext } from '@/context/ProfileContext';
+import { useContext } from 'react';
 
 export const useProfile = () => {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const context = useContext(ProfileContext);
 
-  const fetchProfile = useCallback(async (options?: { showLoading?: boolean }) => {
-    const showLoading = options?.showLoading ?? true;
+  if (!context) {
+    throw new Error('useProfile debe usarse dentro de un ProfileProvider');
+  }
 
-    if (showLoading) {
-      setIsLoading(true);
-    }
-    setError(null);
-    try {
-      const response = await profileEndpoints.getUserProfile();
-      setProfile(response.data);
-    } catch (error) {
-      setError('Error al cargar el perfil');
-    } finally {
-      if (showLoading) {
-        setIsLoading(false);
-      }
-    }
-  }, []);
-
-  const updateProfile = useCallback(async (data: UserProfileRequest) => {
-    setError(null);
-    try {
-      const response = await profileEndpoints.updateUserProfile(data);
-      setProfile(response.data);
-      return response.data;
-    } catch (error) {
-      setError('Error al actualizar el perfil');
-      throw error;
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
-
-  return {
-    profile,
-    isLoading,
-    error,
-    updateProfile,
-    refetch: fetchProfile,
-  };
+  return context;
 };

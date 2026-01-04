@@ -1,6 +1,6 @@
 import { routinesEndpoints } from '@api/endpoints/routines';
 import { DayOfWeek, RoutineSchedule } from '@api/types/entities.types';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export const useRoutineSchedules = () => {
   const [routineSchedules, setRoutineSchedules] = useState<RoutineSchedule[]>([]);
@@ -8,19 +8,20 @@ export const useRoutineSchedules = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchSchedules = async () => {
-      try {
-        const response = await routinesEndpoints.listRoutineSchedules();
-        setRoutineSchedules(response.data);
-      } catch (error) {
-        setError('Error al cargar los horarios');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchSchedules();
+  const fetchSchedules = useCallback(async () => {
+    try {
+      const response = await routinesEndpoints.listRoutineSchedules();
+      setRoutineSchedules(response.data);
+    } catch (error) {
+      setError('Error al cargar los horarios');
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchSchedules();
+  }, [fetchSchedules]);
 
   const createSchedules = async (routineId: number, days: DayOfWeek[]) => {
     try {
@@ -45,5 +46,6 @@ export const useRoutineSchedules = () => {
     isLoading,
     routineSchedules,
     createSchedules,
+    refetch: fetchSchedules,
   };
 };

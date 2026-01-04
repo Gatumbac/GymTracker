@@ -303,7 +303,7 @@ export default function CreateRoutineScreen() {
           />
         )}
         <Button
-          title="Cancelar"
+          title='Volver'
           onPress={handleBack}
           variant="secondary"
           disabled={isSubmitting}

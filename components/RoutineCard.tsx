@@ -39,7 +39,7 @@ export default function RoutineCard({ routine, onDelete, onPress, schedule }: Ro
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.name} numberOfLines={1}>
+          <Text style={styles.name} numberOfLines={2}>
             {routine.name}
           </Text>
           {schedule && schedule.length > 0 && (

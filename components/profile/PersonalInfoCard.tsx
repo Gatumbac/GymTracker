@@ -22,7 +22,7 @@ export const PersonalInfoCard = ({ firstName, lastName, birthDate }: PersonalInf
           <Text style={styles.infoValue}>{firstName} {lastName}</Text>
         </View>
         <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>Fecha Nac.</Text>
+          <Text style={styles.infoLabel}>Fecha De Nacimiento</Text>
           <Text style={styles.infoValue}>{birthDate || 'No especificado'}</Text>
         </View>
       </View>

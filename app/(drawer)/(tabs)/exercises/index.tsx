@@ -1,9 +1,11 @@
 import ScreenContainer from '@/components/ScreenContainer';
 import { commonStyles, theme } from '@/constants/styles';
 import { useExercises } from '@/hooks/useExercises';
+import { Exercise } from '@api/types/entities.types';
 import ExerciseCard from '@components/ExerciseCard';
 import FilterPicker from '@components/FilterPicker';
 import LoadingScreen from '@components/LoadingScreen';
+import { useRouter } from 'expo-router';
 import {
   StyleSheet,
   Text,
@@ -11,6 +13,8 @@ import {
 } from 'react-native';
 
 const ExercisesScreen = () => {
+  const router = useRouter();
+
   const {
     exercises,
     muscleGroups,
@@ -22,6 +26,10 @@ const ExercisesScreen = () => {
     setSelectedExerciseType,
     hasActiveFilters,
   } = useExercises();
+
+  const handleExercisePress = (exercise: Exercise) => {
+    router.push(`/exercises/${exercise.id}`);
+  };
 
   if (isLoading) {
     return (
@@ -61,7 +69,11 @@ const ExercisesScreen = () => {
         </View>
       ) : (
         exercises.map((exercise) => (
-          <ExerciseCard key={exercise.id} exercise={exercise} />
+          <ExerciseCard
+            key={exercise.id}
+            exercise={exercise}
+            onPress={handleExercisePress}
+          />
         ))
       )}
     </ScreenContainer>

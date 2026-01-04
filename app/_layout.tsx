@@ -1,4 +1,5 @@
 import { AuthProvider } from '@context/AuthContext';
+import { ProfileProvider } from '@context/ProfileContext';
 import { useAuth } from "@hooks/useAuth";
 import { Slot, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
@@ -28,10 +29,12 @@ function InitialLayout() {
 // Layout principal que envuelve todo con el Provider
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <AuthProvider>
-        <InitialLayout />
-      </AuthProvider>
-    </SafeAreaProvider>
+    <ProfileProvider>
+      <SafeAreaProvider>
+        <AuthProvider>
+          <InitialLayout />
+        </AuthProvider>
+      </SafeAreaProvider>
+    </ProfileProvider>
   );
 }
