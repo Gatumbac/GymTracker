@@ -9,6 +9,11 @@ export enum DayOfWeek {
   Sunday = 6,
 }
 
+export interface Day {
+  id: number;
+  name: string;
+}
+
 export interface Exercise {
   id: number;
   name: string;
@@ -120,6 +125,12 @@ export interface RoutineSchedule {
   routine_name: string;
   day_of_week: DayOfWeek;
   day_name: string;
+}
+
+export interface RoutineWeeklyScheduleResponse {
+  day_of_week: DayOfWeek;
+  day_name: string;
+  schedule: RoutineSchedule
 }
 
 export interface RoutineScheduleRequest {

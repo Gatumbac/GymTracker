@@ -6,6 +6,7 @@ import { commonStyles, theme } from "@constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useRoutines } from "@hooks/useRoutines";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,6 +16,7 @@ import {
 const RoutinesScreen = () => {
   const router = useRouter();
   const { routines, isLoading, error, deleteRoutine } = useRoutines();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleCreateRoutine = () => {
     router.push('/create-routine');
@@ -22,11 +24,18 @@ const RoutinesScreen = () => {
 
   const handleDeleteRoutine = async (id: number) => {
     try {
+      setIsDeleting(true);
       await deleteRoutine(id);
     } catch (error) {
       console.error('Error al eliminar rutina:', error);
+    } finally {
+      setIsDeleting(false);
     }
   };
+
+  if (isDeleting) {
+    return <LoadingScreen text="Eliminando rutina..." />;
+  }
 
   if (isLoading) {
     return <LoadingScreen text="Cargando rutinas..." />;

@@ -1,6 +1,6 @@
 import TextInput from '@/components/TextInput';
 import { commonStyles, theme } from '@/constants/styles';
-import { DayOfWeek } from '@api/types/entities.types';
+import { Day, DayOfWeek } from '@api/types/entities.types';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Step1BasicInfoProps {
@@ -12,17 +12,8 @@ interface Step1BasicInfoProps {
   onDayToggle: (day: DayOfWeek) => void;
   nameError?: string;
   daysError?: string;
+  avalaibleDays: Day[];
 }
-
-const DAYS_OF_WEEK = [
-  { id: DayOfWeek.Monday, name: 'Lunes' },
-  { id: DayOfWeek.Tuesday, name: 'Martes' },
-  { id: DayOfWeek.Wednesday, name: 'Miércoles' },
-  { id: DayOfWeek.Thursday, name: 'Jueves' },
-  { id: DayOfWeek.Friday, name: 'Viernes' },
-  { id: DayOfWeek.Saturday, name: 'Sábado' },
-  { id: DayOfWeek.Sunday, name: 'Domingo' },
-];
 
 export default function Step1BasicInfo({
   name,
@@ -33,7 +24,9 @@ export default function Step1BasicInfo({
   onDayToggle,
   nameError,
   daysError,
+  avalaibleDays
 }: Step1BasicInfoProps) {
+
   return (
     <View>
       <Text style={styles.sectionTitle}>Información Básica</Text>
@@ -59,17 +52,24 @@ export default function Step1BasicInfo({
       <Text style={commonStyles.label}>Días de entrenamiento *</Text>
       {daysError && <Text style={styles.errorText}>{daysError}</Text>}
       <View style={styles.daysContainer}>
-        {DAYS_OF_WEEK.map((day) => (
-          <TouchableOpacity
-            key={day.id}
-            style={[styles.dayChip, selectedDays.includes(day.id) && styles.dayChipActive]}
-            onPress={() => onDayToggle(day.id)}
-          >
-            <Text style={[styles.dayText, selectedDays.includes(day.id) && styles.dayTextActive]}>
-              {day.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {
+          avalaibleDays.length === 0 && (
+            <Text style={styles.errorText}>No tienes días disponibles para agendar rutinas. Organiza tus horarios para agregar más.</Text>
+          )
+        }
+        {
+          avalaibleDays.map((day) => (
+            <TouchableOpacity
+              key={day.id}
+              style={[styles.dayChip, selectedDays.includes(day.id) && styles.dayChipActive]}
+              onPress={() => onDayToggle(day.id)}
+            >
+              <Text style={[styles.dayText, selectedDays.includes(day.id) && styles.dayTextActive]}>
+                {day.name}
+              </Text>
+            </TouchableOpacity>
+          ))
+        }
       </View>
     </View>
   );
@@ -116,5 +116,9 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     fontSize: theme.typography.sizes.xs,
     marginVertical: theme.spacing.xs,
+  },
+  loadingContainer: {
+    marginTop: theme.spacing.md,
+    alignItems: 'center',
   },
 });

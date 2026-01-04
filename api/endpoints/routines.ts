@@ -5,7 +5,8 @@ import {
   Routine,
   RoutineRequest,
   RoutineSchedule,
-  RoutineScheduleRequest
+  RoutineScheduleRequest,
+  RoutineWeeklyScheduleResponse
 } from '@api/types/entities.types';
 
 export const routinesEndpoints = {
@@ -37,7 +38,7 @@ export const routinesEndpoints = {
     apiClient.get<RoutineSchedule>(`/core/routine-schedules/${id}/`),
 
   getWeeklySchedule: () =>
-    apiClient.get<RoutineSchedule[]>('/core/routine-schedules/weekly/'),
+    apiClient.get<RoutineWeeklyScheduleResponse[]>('/core/routine-schedules/weekly/'),
 
   updateRoutineSchedule: (id: number, data: RoutineScheduleRequest) =>
     apiClient.put<RoutineSchedule>(`/core/routine-schedules/${id}/`, data),

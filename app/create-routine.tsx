@@ -8,7 +8,7 @@ import { commonStyles, theme } from '@/constants/styles';
 import { useExercises } from '@/hooks/useExercises';
 import { useRoutines } from '@/hooks/useRoutines';
 import { useRoutineSchedules } from '@/hooks/useRoutineSchedules';
-import { DayOfWeek } from '@api/types/entities.types';
+import { Day, DayOfWeek } from '@api/types/entities.types';
 import { Ionicons } from '@expo/vector-icons';
 import { RoutineStep1ValidationErrors, validateExerciseConfig, validateRoutineStep1 } from '@utils/validation';
 import { useRouter } from 'expo-router';
@@ -27,6 +27,16 @@ interface ExerciseConfig {
   target_reps?: number;
   rest_time_seconds?: number;
 }
+
+const DAYS_OF_WEEK: Day[] = [
+  { id: DayOfWeek.Monday, name: 'Lunes' },
+  { id: DayOfWeek.Tuesday, name: 'Martes' },
+  { id: DayOfWeek.Wednesday, name: 'Miércoles' },
+  { id: DayOfWeek.Thursday, name: 'Jueves' },
+  { id: DayOfWeek.Friday, name: 'Viernes' },
+  { id: DayOfWeek.Saturday, name: 'Sábado' },
+  { id: DayOfWeek.Sunday, name: 'Domingo' },
+];
 
 export default function CreateRoutineScreen() {
   const router = useRouter();
@@ -49,10 +59,13 @@ export default function CreateRoutineScreen() {
     selectedExerciseType,
     setSelectedMuscleGroup,
     setSelectedExerciseType,
-    isLoading: loadingExercises
+    isLoading: loadingExercises,
   } = useExercises();
+
   const { createRoutine } = useRoutines();
-  const { createSchedules, isCreating } = useRoutineSchedules();
+  const { createSchedules, routineSchedules, isLoading: loadingSchedules } = useRoutineSchedules();
+
+  const avalaibleDays = DAYS_OF_WEEK.filter(day => !routineSchedules.some(schedule => schedule.day_of_week === day.id));
 
   const selectedExercises = useMemo(() => {
     return exercises.filter(ex => selectedExerciseIds.includes(ex.id));
@@ -99,6 +112,7 @@ export default function CreateRoutineScreen() {
     setExerciseConfigs(prev => new Map(prev).set(id, config));
   };
 
+  const canGoToStep2 = selectedDays.length > 0;
   const canGoToStep3 = selectedExerciseIds.length > 0;
 
   const handleNext = async () => {
@@ -110,6 +124,11 @@ export default function CreateRoutineScreen() {
 
       if (Object.keys(errors).length > 0) {
         setValidationErrors(errors);
+        return;
+      }
+
+      if (!canGoToStep2) {
+        Alert.alert('Atención', 'Debes seleccionar al menos un día');
         return;
       }
 
@@ -199,8 +218,8 @@ export default function CreateRoutineScreen() {
     }
   };
 
-  if (loadingExercises) {
-    return <LoadingScreen text="Cargando ejercicios..." />;
+  if (loadingExercises || loadingSchedules) {
+    return <LoadingScreen text="Cargando ejercicios y horarios..." />;
   }
 
   return (
@@ -235,6 +254,7 @@ export default function CreateRoutineScreen() {
             onDayToggle={toggleDay}
             nameError={validationErrors.name}
             daysError={validationErrors.days}
+            avalaibleDays={avalaibleDays}
           />
         )}
 

@@ -1,27 +1,32 @@
 import { routinesEndpoints } from '@api/endpoints/routines';
 import { Routine, RoutineRequest } from '@api/types/entities.types';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useRoutines = () => {
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRoutines = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await routinesEndpoints.listRoutines();
-      setRoutines(response.data);
-    } catch (error) {
-      setError('Error al cargar las rutinas');
-    } finally {
-      setIsLoading(false);
-    }
+  useEffect(() => {
+    const fetchRoutines = async () => {
+      setError(null);
+      setIsLoading(true);
+      try {
+        const response = await routinesEndpoints.listRoutines();
+        setRoutines(response.data);
+      } catch (error) {
+        setError('Error al cargar las rutinas');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchRoutines();
   }, []);
 
-  const createRoutine = useCallback(async (data: RoutineRequest) => {
+  const createRoutine = async (data: RoutineRequest) => {
     setError(null);
+    setIsProcessing(true);
     try {
       const response = await routinesEndpoints.createRoutine(data);
       setRoutines(prev => [...prev, response.data]);
@@ -29,30 +34,31 @@ export const useRoutines = () => {
     } catch (error) {
       setError('Error al crear la rutina');
       throw error;
+    } finally {
+      setIsProcessing(false);
     }
-  }, []);
+  };
 
-  const deleteRoutine = useCallback(async (id: number) => {
+  const deleteRoutine = async (id: number) => {
     setError(null);
+    setIsProcessing(true);
     try {
       await routinesEndpoints.deleteRoutine(id);
       setRoutines(prev => prev.filter(routine => routine.id !== id));
     } catch (error) {
       setError('Error al eliminar la rutina');
       throw error;
+    } finally {
+      setIsProcessing(false);
     }
-  }, []);
-
-  useEffect(() => {
-    fetchRoutines();
-  }, [fetchRoutines]);
+  };
 
   return {
     routines,
     isLoading,
+    isProcessing,
     error,
     createRoutine,
     deleteRoutine,
-    refetch: fetchRoutines,
   };
 };
