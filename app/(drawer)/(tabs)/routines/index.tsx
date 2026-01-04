@@ -2,16 +2,13 @@ import Button from "@/components/Button";
 import LoadingScreen from "@/components/LoadingScreen";
 import RoutineCard from "@/components/RoutineCard";
 import ScreenContainer from "@/components/ScreenContainer";
+import { Routine } from "@api/types/entities.types";
 import { commonStyles, theme } from "@constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useRoutines } from "@hooks/useRoutines";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 const RoutinesScreen = () => {
   const router = useRouter();
@@ -20,6 +17,10 @@ const RoutinesScreen = () => {
 
   const handleCreateRoutine = () => {
     router.push('/create-routine');
+  };
+
+  const handleRoutinePress = (routine: Routine) => {
+    router.push(`/routines/${routine.id}`);
   };
 
   const handleDeleteRoutine = async (id: number) => {
@@ -73,6 +74,7 @@ const RoutinesScreen = () => {
             key={routine.id}
             routine={routine}
             onDelete={handleDeleteRoutine}
+            onPress={handleRoutinePress}
           />
         ))
       )}

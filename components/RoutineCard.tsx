@@ -6,9 +6,10 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 interface RoutineCardProps {
   routine: Routine;
   onDelete: (id: number) => void;
+  onPress: (routine: Routine) => void;
 }
 
-export default function RoutineCard({ routine, onDelete }: RoutineCardProps) {
+export default function RoutineCard({ routine, onDelete, onPress }: RoutineCardProps) {
   const handleDelete = () => {
     Alert.alert(
       'Eliminar Rutina',
@@ -26,26 +27,32 @@ export default function RoutineCard({ routine, onDelete }: RoutineCardProps) {
 
   return (
     <View style={styles.card}>
-      <View style={styles.iconContainer}>
-        <Ionicons name="barbell" size={48} color={theme.colors.primary} />
-      </View>
-
-      <View style={styles.content}>
-        <Text style={styles.name} numberOfLines={1}>
-          {routine.name}
-        </Text>
-        {routine.description && (
-          <Text style={styles.description} numberOfLines={2}>
-            {routine.description}
-          </Text>
-        )}
-        <View style={styles.badge}>
-          <Ionicons name="fitness" size={14} color={theme.colors.text.secondary} />
-          <Text style={styles.badgeText}>
-            {routine.items.length} {routine.items.length === 1 ? 'ejercicio' : 'ejercicios'}
-          </Text>
+      <TouchableOpacity
+        style={styles.contentButton}
+        onPress={() => onPress(routine)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.iconContainer}>
+          <Ionicons name="barbell" size={48} color={theme.colors.primary} />
         </View>
-      </View>
+
+        <View style={styles.content}>
+          <Text style={styles.name} numberOfLines={1}>
+            {routine.name}
+          </Text>
+          {routine.description && (
+            <Text style={styles.description} numberOfLines={2}>
+              {routine.description}
+            </Text>
+          )}
+          <View style={styles.badge}>
+            <Ionicons name="fitness" size={14} color={theme.colors.text.secondary} />
+            <Text style={styles.badgeText}>
+              {routine.items.length} {routine.items.length === 1 ? 'ejercicio' : 'ejercicios'}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
         <Ionicons name="trash" size={24} color={theme.colors.error} />
@@ -67,6 +74,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     padding: theme.spacing.md,
+    alignItems: 'center',
+  },
+  contentButton: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
   },
   iconContainer: {

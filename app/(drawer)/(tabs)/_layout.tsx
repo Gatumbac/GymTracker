@@ -54,6 +54,7 @@ export default function AppLayout() {
         options={{
           title: 'Inicio',
           headerTitle: 'GymTracker',
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'fitness' : 'fitness-outline'}
@@ -67,7 +68,7 @@ export default function AppLayout() {
         name="routines"
         options={{
           title: 'Rutinas',
-          headerTitle: 'Rutinas',
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'list' : 'list-outline'}
