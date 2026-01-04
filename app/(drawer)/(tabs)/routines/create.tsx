@@ -4,21 +4,20 @@ import Step1BasicInfo from '@/components/routine-steps/Step1BasicInfo';
 import Step2SelectExercises from '@/components/routine-steps/Step2SelectExercises';
 import Step3ConfigureExercises from '@/components/routine-steps/Step3ConfigureExercises';
 import ScreenContainer from '@/components/ScreenContainer';
+import { DAYS_OF_WEEK } from '@/constants/days';
 import { commonStyles, theme } from '@/constants/styles';
 import { useExercises } from '@/hooks/useExercises';
 import { useRoutines } from '@/hooks/useRoutines';
 import { useRoutineSchedules } from '@/hooks/useRoutineSchedules';
-import { Day, DayOfWeek } from '@api/types/entities.types';
-import { Ionicons } from '@expo/vector-icons';
+import { DayOfWeek } from '@api/types/entities.types';
 import { RoutineStep1ValidationErrors, validateExerciseConfig, validateRoutineStep1 } from '@utils/validation';
-import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useNavigation, useRouter } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View
 } from 'react-native';
 
@@ -28,18 +27,9 @@ interface ExerciseConfig {
   rest_time_seconds?: number;
 }
 
-const DAYS_OF_WEEK: Day[] = [
-  { id: DayOfWeek.Monday, name: 'Lunes' },
-  { id: DayOfWeek.Tuesday, name: 'Martes' },
-  { id: DayOfWeek.Wednesday, name: 'Miércoles' },
-  { id: DayOfWeek.Thursday, name: 'Jueves' },
-  { id: DayOfWeek.Friday, name: 'Viernes' },
-  { id: DayOfWeek.Saturday, name: 'Sábado' },
-  { id: DayOfWeek.Sunday, name: 'Domingo' },
-];
-
 export default function CreateRoutineScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const [step, setStep] = useState(1);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -70,6 +60,32 @@ export default function CreateRoutineScreen() {
   const selectedExercises = useMemo(() => {
     return exercises.filter(ex => selectedExerciseIds.includes(ex.id));
   }, [exercises, selectedExerciseIds]);
+
+
+  useEffect(() => {
+
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      if (isSubmitting) {
+        return;
+      }
+      e.preventDefault();
+
+      Alert.alert(
+        '¿Desea salir?',
+        'Se perderán los cambios no guardados.',
+        [
+          { text: 'Cancelar', style: 'cancel', onPress: () => { } },
+          {
+            text: 'Salir',
+            style: 'destructive',
+            onPress: () => navigation.dispatch(e.data.action),
+          },
+        ]
+      );
+    });
+
+    return unsubscribe;
+  }, [navigation, isSubmitting]);
 
   const toggleDay = (day: DayOfWeek) => {
     setSelectedDays(prev =>
@@ -134,7 +150,6 @@ export default function CreateRoutineScreen() {
 
       setValidationErrors({});
       setIsNavigatingStep(true);
-      // Pequeño delay para que se vea el spinner y la transición sea más suave
       setTimeout(() => {
         setStep(2);
         setIsNavigatingStep(false);
@@ -156,10 +171,7 @@ export default function CreateRoutineScreen() {
     if (step > 1) {
       setStep(step - 1);
     } else {
-      Alert.alert('¿Desea cancelar?', 'Se perderán los cambios', [
-        { text: 'Cancelar', onPress: () => { } },
-        { text: 'Sí', onPress: () => router.back() },
-      ]);
+      router.back();
     }
   };
 
@@ -209,11 +221,10 @@ export default function CreateRoutineScreen() {
       await createSchedules(routine.id, selectedDays);
 
       Alert.alert('¡Éxito!', 'Rutina creada correctamente', [
-        { text: 'OK', onPress: () => router.replace('/(tabs)/routines') }
+        { text: 'OK', onPress: () => router.replace('/(drawer)/(tabs)/routines') }
       ]);
     } catch (error) {
       Alert.alert('Error', 'No se pudo crear la rutina');
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -224,13 +235,7 @@ export default function CreateRoutineScreen() {
 
   return (
     <ScreenContainer>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Ionicons name="arrow-back-circle-outline" size={40} color={theme.colors.text.primary} />
-        </TouchableOpacity>
-        <Text style={commonStyles.title}>Crear Rutina</Text>
-        <View style={styles.placeholder} />
-      </View>
+      <Text style={commonStyles.title}>Crear Rutina</Text>
 
       <View style={styles.stepper}>
         {[1, 2, 3].map((s) => (
@@ -297,26 +302,18 @@ export default function CreateRoutineScreen() {
             isLoading={isSubmitting}
           />
         )}
+        <Button
+          title="Cancelar"
+          onPress={handleBack}
+          variant="secondary"
+          disabled={isSubmitting}
+        />
       </View>
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: theme.spacing.md,
-    marginTop: theme.spacing.xxl,
-    paddingVertical: theme.spacing.sm,
-  },
-  backButton: {
-    padding: theme.spacing.xs,
-  },
-  placeholder: {
-    width: 40,
-  },
   stepper: {
     flexDirection: 'row',
     justifyContent: 'center',

@@ -1,7 +1,9 @@
 import LoadingScreen from "@/components/LoadingScreen";
 import RoutineExerciseItem from "@/components/RoutineExerciseItem";
 import ScreenContainer from "@/components/ScreenContainer";
+import { DAYS_OF_WEEK } from "@/constants/days";
 import { commonStyles, theme } from "@/constants/styles";
+import { useRoutineSchedules } from "@/hooks/useRoutineSchedules";
 import { routinesEndpoints } from "@api/endpoints/routines";
 import { Routine } from "@api/types/entities.types";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -15,6 +17,9 @@ export default function RoutineDetailScreen() {
   const [routine, setRoutine] = useState<Routine | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { routineSchedules, isLoading: isLoadingSchedules } = useRoutineSchedules();
+
+  const routineSchedule = routineSchedules.filter(schedule => schedule.routine === Number(id));
 
   useEffect(() => {
     const loadRoutine = async () => {
@@ -37,7 +42,7 @@ export default function RoutineDetailScreen() {
     loadRoutine();
   }, [id]);
 
-  if (isLoading) {
+  if (isLoading || isLoadingSchedules) {
     return <LoadingScreen text="Cargando rutina..." />;
   }
 
@@ -62,6 +67,12 @@ export default function RoutineDetailScreen() {
       {routine.description && (
         <Text style={styles.description}>{routine.description}</Text>
       )}
+
+      <View style={styles.daysContainer}>
+        {routineSchedule.map((schedule) => (
+          <Text key={schedule.id} style={styles.dayOfWeek}>{DAYS_OF_WEEK[schedule.day_of_week].name}</Text>
+        ))}
+      </View>
 
       <Text style={styles.sectionTitle}>Ejercicios ({routine.items.length})</Text>
 
@@ -103,5 +114,22 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.lg,
     fontWeight: theme.typography.weights.bold,
     marginBottom: theme.spacing.md,
+  },
+  daysContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
+    gap: 10,
+    marginBottom: theme.spacing.xl,
+    flexWrap: 'wrap'
+  },
+  dayOfWeek: {
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
+    padding: theme.spacing.sm,
+    borderRadius: theme.spacing.sm,
+    backgroundColor: theme.colors.secondaryDark,
+    color: theme.colors.background,
   },
 });

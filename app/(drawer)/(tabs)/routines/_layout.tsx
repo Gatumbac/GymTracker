@@ -19,6 +19,14 @@ export default function RoutinesLayout() {
           headerBackTitle: 'Rutinas',
         }}
       />
+      <Stack.Screen
+        name="create"
+        options={{
+          headerShown: false,
+          headerTitle: 'Crear Rutina',
+          headerBackTitle: 'Rutinas',
+        }}
+      />
     </Stack>
   );
 }

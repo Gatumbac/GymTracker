@@ -83,23 +83,10 @@ export default function AppLayout() {
         options={{
           title: 'Ejercicios',
           headerTitle: 'Ejercicios',
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'barbell' : 'barbell-outline'}
-              size={28}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Perfil',
-          headerTitle: 'Mi Perfil',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'person-circle' : 'person-circle-outline'}
               size={28}
               color={color}
             />

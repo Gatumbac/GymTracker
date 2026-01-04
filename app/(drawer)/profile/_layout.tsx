@@ -14,7 +14,13 @@ export default function ProfileLayout() {
           headerShown: false
         }}
       />
-
+      <Stack.Screen
+        name="edit"
+        options={{
+          title: "Editar Perfil",
+          headerShown: false
+        }}
+      />
     </Stack>
   );
 }

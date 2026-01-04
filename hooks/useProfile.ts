@@ -7,8 +7,12 @@ export const useProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProfile = useCallback(async () => {
-    setIsLoading(true);
+  const fetchProfile = useCallback(async (options?: { showLoading?: boolean }) => {
+    const showLoading = options?.showLoading ?? true;
+
+    if (showLoading) {
+      setIsLoading(true);
+    }
     setError(null);
     try {
       const response = await profileEndpoints.getUserProfile();
@@ -16,7 +20,9 @@ export const useProfile = () => {
     } catch (error) {
       setError('Error al cargar el perfil');
     } finally {
-      setIsLoading(false);
+      if (showLoading) {
+        setIsLoading(false);
+      }
     }
   }, []);
 

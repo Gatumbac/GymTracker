@@ -5,6 +5,7 @@ import ScreenContainer from "@/components/ScreenContainer";
 import { Routine } from "@api/types/entities.types";
 import { commonStyles, theme } from "@constants/styles";
 import { Ionicons } from "@expo/vector-icons";
+import { useRoutineSchedules } from "@hooks/useRoutineSchedules";
 import { useRoutines } from "@hooks/useRoutines";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -14,9 +15,11 @@ const RoutinesScreen = () => {
   const router = useRouter();
   const { routines, isLoading, error, deleteRoutine } = useRoutines();
   const [isDeleting, setIsDeleting] = useState(false);
+  const { routineSchedules, isLoading: isLoadingSchedules } = useRoutineSchedules();
+
 
   const handleCreateRoutine = () => {
-    router.push('/create-routine');
+    router.push('/(drawer)/(tabs)/routines/create');
   };
 
   const handleRoutinePress = (routine: Routine) => {
@@ -40,6 +43,10 @@ const RoutinesScreen = () => {
 
   if (isLoading) {
     return <LoadingScreen text="Cargando rutinas..." />;
+  }
+
+  if (isLoadingSchedules) {
+    return <LoadingScreen text="Cargando horarios..." />;
   }
 
   return (
@@ -75,6 +82,7 @@ const RoutinesScreen = () => {
             routine={routine}
             onDelete={handleDeleteRoutine}
             onPress={handleRoutinePress}
+            schedule={routineSchedules.filter(schedule => schedule.routine === routine.id)}
           />
         ))
       )}

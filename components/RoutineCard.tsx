@@ -1,5 +1,6 @@
+import { DAYS_OF_WEEK } from '@/constants/days';
 import { theme } from '@/constants/styles';
-import { Routine } from '@api/types/entities.types';
+import { Routine, RoutineSchedule } from '@api/types/entities.types';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -7,9 +8,10 @@ interface RoutineCardProps {
   routine: Routine;
   onDelete: (id: number) => void;
   onPress: (routine: Routine) => void;
+  schedule?: RoutineSchedule[];
 }
 
-export default function RoutineCard({ routine, onDelete, onPress }: RoutineCardProps) {
+export default function RoutineCard({ routine, onDelete, onPress, schedule }: RoutineCardProps) {
   const handleDelete = () => {
     Alert.alert(
       'Eliminar Rutina',
@@ -40,9 +42,9 @@ export default function RoutineCard({ routine, onDelete, onPress }: RoutineCardP
           <Text style={styles.name} numberOfLines={1}>
             {routine.name}
           </Text>
-          {routine.description && (
+          {schedule && schedule.length > 0 && (
             <Text style={styles.description} numberOfLines={2}>
-              {routine.description}
+              {schedule.map(schedule => DAYS_OF_WEEK[schedule.day_of_week].name).join(', ')}
             </Text>
           )}
           <View style={styles.badge}>
@@ -109,6 +111,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    marginTop: theme.spacing.xs,
   },
   badgeText: {
     fontSize: theme.typography.sizes.xs,
