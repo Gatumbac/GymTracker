@@ -84,7 +84,7 @@ export default function WorkoutSummaryView({ session }: WorkoutSummaryViewProps)
 
       <Button
         title="Volver"
-        onPress={() => router.back()}
+        onPress={() => router.push('/(drawer)/(tabs)/workouts')}
       />
     </View>
   );

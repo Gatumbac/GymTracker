@@ -96,7 +96,7 @@ export default function ActiveWorkoutView({ session, onFinish, onSessionUpdate }
         />
         <Button
           title="Volver"
-          onPress={() => router.back()}
+          onPress={() => router.push('/(drawer)/(tabs)/workouts')}
           variant="secondary"
         />
       </View>

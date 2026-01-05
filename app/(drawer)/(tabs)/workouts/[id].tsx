@@ -49,7 +49,7 @@ export default function WorkoutDetailScreen() {
           <Text style={styles.errorText}>
             {error || 'No se pudo cargar la información del entrenamiento.'}
           </Text>
-          <Text style={styles.backLink} onPress={() => router.back()}>
+          <Text style={styles.backLink} onPress={() => router.push('/(drawer)/(tabs)/workouts')}>
             Volver
           </Text>
         </View>

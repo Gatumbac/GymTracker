@@ -43,6 +43,7 @@ export default function CreateRoutineScreen() {
 
   const {
     exercises,
+    allExercises,
     muscleGroups,
     exerciseTypes,
     selectedMuscleGroup,
@@ -58,7 +59,7 @@ export default function CreateRoutineScreen() {
   const avalaibleDays = DAYS_OF_WEEK.filter(day => !routineSchedules.some(schedule => schedule.day_of_week === day.id));
 
   const selectedExercises = useMemo(() => {
-    return exercises.filter(ex => selectedExerciseIds.includes(ex.id));
+    return allExercises.filter(ex => selectedExerciseIds.includes(ex.id));
   }, [exercises, selectedExerciseIds]);
 
 

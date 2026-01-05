@@ -54,6 +54,7 @@ export const useExercises = () => {
   };
 
   return {
+    allExercises,
     exercises,
     muscleGroups,
     exerciseTypes,
