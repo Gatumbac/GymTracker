@@ -9,13 +9,15 @@ interface TodayRoutineCardProps {
   isLoading: boolean;
   onStart: () => void;
   isStarting?: boolean;
+  hasTrainedToday?: boolean;
 }
 
 const TodayRoutineCard: React.FC<TodayRoutineCardProps> = ({
   schedule,
   isLoading,
   onStart,
-  isStarting = false
+  isStarting = false,
+  hasTrainedToday = false
 }) => {
   if (isLoading) {
     return (
@@ -38,24 +40,41 @@ const TodayRoutineCard: React.FC<TodayRoutineCardProps> = ({
     );
   }
 
+  if (hasTrainedToday) {
+    return (
+      <View style={[styles.card, styles.completedCard]}>
+        <View style={styles.completedHeader}>
+          <View style={styles.completedIconContainer}>
+            <Ionicons name="checkmark-circle" size={64} color="#4CAF50" />
+          </View>
+        </View>
+        <Text style={styles.completedTitle}>¡Entrenamiento Completado!</Text>
+        <Text style={styles.completedSubtext}>Excelente trabajo hoy. Sigue así</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
-        <View style={styles.tagContainer}>
-          <Text style={styles.tagText}>HOY</Text>
+      <View style={styles.gradientOverlay} />
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.tagContainer}>
+            <Text style={styles.tagText}>HOY</Text>
+          </View>
+          <Ionicons name="fitness" size={28} color="#FF6B6B" />
         </View>
-        <Ionicons name="fitness-outline" size={24} color="#555" />
+
+        <Text style={styles.routineName}>{schedule.routine_name}</Text>
+        <Text style={styles.routineSubtext}>¿Listo para romperla hoy?</Text>
+
+        <Button
+          title="Iniciar Entrenamiento"
+          onPress={onStart}
+          isLoading={isStarting}
+          style={styles.startButton}
+        />
       </View>
-
-      <Text style={styles.routineName}>{schedule.routine_name}</Text>
-      <Text style={styles.routineSubtext}>Listo para romperla hoy?</Text>
-
-      <Button
-        title="Iniciar Entrenamiento"
-        onPress={onStart}
-        isLoading={isStarting}
-        style={styles.startButton}
-      />
     </View>
   );
 };
@@ -66,21 +85,37 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
     borderRadius: 24,
-    padding: 24,
+    padding: 0,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 8,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 8,
     marginBottom: 20,
-    minHeight: 200,
-    justifyContent: 'center',
+    minHeight: 220,
+    overflow: 'hidden',
+  },
+  gradientOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 120,
+    backgroundColor: '#FFF5F5',
+    opacity: 0.5,
+  },
+  content: {
+    padding: 24,
+    position: 'relative',
+    zIndex: 1,
   },
   loadingCard: {
     alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
   },
   loadingText: {
     marginTop: 12,
@@ -90,18 +125,19 @@ const styles = StyleSheet.create({
   emptyCard: {
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 24,
   },
   iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: '#F0FDF4',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     color: '#333',
     marginBottom: 8,
@@ -111,35 +147,72 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     paddingHorizontal: 20,
+    lineHeight: 20,
+  },
+  completedCard: {
+    backgroundColor: '#F0FDF4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+  },
+  completedHeader: {
+    marginBottom: 16,
+  },
+  completedIconContainer: {
+    alignItems: 'center',
+  },
+  completedTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#2D3436',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  completedText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#4CAF50',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  completedSubtext: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   tagContainer: {
-    backgroundColor: '#FFF0F0',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
+    backgroundColor: '#FFE5E5',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#FFD0D0',
   },
   tagText: {
     color: '#FF6B6B',
-    fontWeight: '700',
+    fontWeight: '800',
     fontSize: 12,
+    letterSpacing: 1,
   },
   routineName: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '800',
     color: '#2D3436',
     marginBottom: 8,
-    letterSpacing: -0.5,
+    letterSpacing: -1,
+    lineHeight: 38,
   },
   routineSubtext: {
     fontSize: 16,
     color: '#888',
-    marginBottom: 24,
+    marginBottom: 28,
+    lineHeight: 22,
   },
   startButton: {
     marginTop: 'auto',

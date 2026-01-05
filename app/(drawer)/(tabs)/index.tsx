@@ -6,7 +6,9 @@ import WeeklySummary from "@/components/home/WeeklySummary";
 import { useProfile } from "@/hooks/useProfile";
 import { DayOfWeek } from "@api/types/entities.types";
 import { useRoutineSchedules } from "@hooks/useRoutineSchedules";
+import { useWorkoutHistory } from "@hooks/useWorkoutHistory";
 import { useWorkoutSession } from "@hooks/useWorkoutSession";
+import { isSameDay } from "@utils/date";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
@@ -14,13 +16,15 @@ import { Alert, ScrollView, StyleSheet, View } from "react-native";
 const Index = () => {
   const { routineSchedules, isLoading: isLoadingSchedules, refetch } = useRoutineSchedules();
   const { startSession, isLoading: isStartingSession } = useWorkoutSession();
+  const { sessions, isLoading: isLoadingSessions, refresh: refreshSessions } = useWorkoutHistory();
   const router = useRouter();
   const { profile, isLoading: isLoadingProfile } = useProfile();
 
   useFocusEffect(
     useCallback(() => {
       refetch();
-    }, [refetch])
+      refreshSessions();
+    }, [refetch, refreshSessions])
   );
 
   const getTodayDayOfWeek = (): DayOfWeek => {
@@ -33,13 +37,15 @@ const Index = () => {
     (schedule) => schedule.day_of_week === getTodayDayOfWeek()
   );
 
+  const hasTrainedToday = sessions.some(session =>
+    isSameDay(session.start_time, new Date()) && !session.is_active
+  );
+
   const handleStartRoutine = async () => {
     if (!todayRoutineSchedule) return;
-
     try {
-      await startSession(todayRoutineSchedule.routine);
-      Alert.alert("¡A entrenar!", "Sesión iniciada correctamente.");
-      // Optional: Navigate to active session or refresh
+      const newSession = await startSession(todayRoutineSchedule.routine);
+      router.push(`/workouts/${newSession.id}`);
     } catch (error) {
       Alert.alert("Error", "No se pudo iniciar la sesión. Intenta nuevamente.");
     }
@@ -49,7 +55,7 @@ const Index = () => {
     router.push('/profile');
   };
 
-  if (isLoadingProfile || isLoadingSchedules) {
+  if (isLoadingProfile || isLoadingSchedules || isLoadingSessions) {
     return <LoadingScreen text="Preparando tu gimnasio..." />;
   }
 
@@ -67,6 +73,7 @@ const Index = () => {
         <WeeklySummary
           schedules={routineSchedules}
           currentDayIndex={getTodayDayOfWeek()}
+          workoutSessions={sessions}
         />
 
         <View style={styles.section}>
@@ -75,6 +82,7 @@ const Index = () => {
             isLoading={isLoadingSchedules}
             onStart={handleStartRoutine}
             isStarting={isStartingSession}
+            hasTrainedToday={hasTrainedToday}
           />
         </View>
 

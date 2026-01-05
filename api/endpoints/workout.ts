@@ -1,7 +1,8 @@
 import client from "@api/client";
-import { WorkoutSession, WorkoutSessionRequest } from "@api/types/entities.types";
+import { WorkoutSession, WorkoutSessionRequest, WorkoutSet, WorkoutSetRequest } from "@api/types/entities.types";
 
 const WORKOUT_SESSIONS_URL = '/core/workout-sessions/';
+const WORKOUT_SETS_URL = '/core/workout-sets/';
 
 export const workoutSessionsEndpoints = {
   listWorkoutSessions: () =>
@@ -27,4 +28,12 @@ export const workoutSessionsEndpoints = {
 
   getActiveWorkoutSession: () =>
     client.get<WorkoutSession>(`${WORKOUT_SESSIONS_URL}active/`),
+};
+
+export const workoutSetsEndpoints = {
+  createWorkoutSet: (data: WorkoutSetRequest) =>
+    client.post<WorkoutSet>(WORKOUT_SETS_URL, data),
+
+  deleteWorkoutSet: (id: number) =>
+    client.delete(`${WORKOUT_SETS_URL}${id}/`),
 };

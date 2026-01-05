@@ -5,11 +5,12 @@ import ScreenContainer from "@/components/ScreenContainer";
 import { DAYS_OF_WEEK } from "@/constants/days";
 import { commonStyles, theme } from "@/constants/styles";
 import { useRoutineSchedules } from "@/hooks/useRoutineSchedules";
+import { useWorkoutSession } from "@/hooks/useWorkoutSession";
 import { routinesEndpoints } from "@api/endpoints/routines";
 import { Routine } from "@api/types/entities.types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 
 export default function RoutineDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -19,6 +20,7 @@ export default function RoutineDetailScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { routineSchedules, isLoading: isLoadingSchedules } = useRoutineSchedules();
+  const { startSession, isLoading: isStartingSession } = useWorkoutSession();
 
   const routineSchedule = routineSchedules.filter(schedule => schedule.routine === Number(id));
 
@@ -42,6 +44,16 @@ export default function RoutineDetailScreen() {
 
     loadRoutine();
   }, [id]);
+
+  const handleStartWorkout = async () => {
+    if (!routine) return;
+    try {
+      const newSession = await startSession(routine.id);
+      router.push(`/workouts/${newSession.id}`);
+    } catch (error) {
+      Alert.alert("Error", "No se pudo iniciar la sesión. Intenta nuevamente.");
+    }
+  };
 
   if (isLoading || isLoadingSchedules) {
     return <LoadingScreen text="Cargando rutina..." />;
@@ -84,8 +96,16 @@ export default function RoutineDetailScreen() {
         ))}
 
       <Button
+        title="Iniciar Entrenamiento"
+        onPress={handleStartWorkout}
+        isLoading={isStartingSession}
+        style={styles.startButton}
+      />
+
+      <Button
         title="Volver"
         onPress={() => router.back()}
+        variant="secondary"
       />
 
     </ScreenContainer>
@@ -138,5 +158,8 @@ const styles = StyleSheet.create({
     borderRadius: theme.spacing.sm,
     backgroundColor: theme.colors.secondary,
     color: theme.colors.background,
+  },
+  startButton: {
+    marginBottom: theme.spacing.md,
   },
 });

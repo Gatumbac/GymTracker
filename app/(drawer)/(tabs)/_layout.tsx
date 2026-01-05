@@ -93,6 +93,20 @@ export default function AppLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="workouts"
+        options={{
+          title: 'Workouts',
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? 'play-circle' : 'play-circle-outline'}
+              size={28}
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

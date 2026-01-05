@@ -170,8 +170,8 @@ export interface WorkoutSet {
 
 export interface WorkoutSession {
   id: number;
-  routine?: number | null;
-  routine_name: string;
+  routine: number | null;
+  routine_name?: string;
   start_time: string;
   end_time?: string | null;
   is_active: boolean;

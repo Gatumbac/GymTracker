@@ -1,18 +1,28 @@
-import { RoutineSchedule } from '@api/types/entities.types';
+import { RoutineSchedule, WorkoutSession } from '@api/types/entities.types';
+import { Ionicons } from '@expo/vector-icons';
+import { getDayOfWeekFromDate } from '@utils/date';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 interface WeeklySummaryProps {
   schedules: RoutineSchedule[];
   currentDayIndex: number;
+  workoutSessions: WorkoutSession[];
 }
 
 const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
-const WeeklySummary: React.FC<WeeklySummaryProps> = ({ schedules, currentDayIndex }) => {
+const WeeklySummary: React.FC<WeeklySummaryProps> = ({ schedules, currentDayIndex, workoutSessions }) => {
 
   const isDayScheduled = (dayIndex: number) => {
     return schedules.some(s => s.day_of_week === dayIndex);
+  };
+
+  const hasWorkoutOnDay = (dayIndex: number): boolean => {
+    return workoutSessions.some(session => {
+      const sessionDay = getDayOfWeekFromDate(session.start_time);
+      return sessionDay === dayIndex && !session.is_active;
+    });
   };
 
   return (
@@ -22,6 +32,7 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({ schedules, currentDayInde
         {DAYS.map((day, index) => {
           const isToday = index === currentDayIndex;
           const hasRoutine = isDayScheduled(index);
+          const hasWorkout = hasWorkoutOnDay(index);
 
           return (
             <View key={day} style={[styles.dayColumn, isToday && styles.todayColumn]}>
@@ -29,9 +40,14 @@ const WeeklySummary: React.FC<WeeklySummaryProps> = ({ schedules, currentDayInde
               <View style={[
                 styles.indicator,
                 hasRoutine && styles.scheduledIndicator,
-                isToday && !hasRoutine && styles.todayEmptyIndicator
+                isToday && !hasRoutine && styles.todayEmptyIndicator,
+                hasWorkout && styles.completedIndicator
               ]}>
-                {hasRoutine && <View style={styles.innerDot} />}
+                {hasWorkout ? (
+                  <Ionicons name="checkmark" size={14} color="#fff" />
+                ) : hasRoutine ? (
+                  <View style={styles.innerDot} />
+                ) : null}
               </View>
             </View>
           );
@@ -102,5 +118,9 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#FF6B6B',
+  },
+  completedIndicator: {
+    backgroundColor: '#4CAF50',
+    borderWidth: 0,
   }
 });
