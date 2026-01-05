@@ -31,7 +31,9 @@ const Profile = () => {
       },
       {
         text: 'Cerrar Sesión',
-        onPress: () => signOut(),
+        onPress: () => {
+          signOut();
+        },
         style: 'destructive',
       },
     ]);

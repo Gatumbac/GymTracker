@@ -5,7 +5,6 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// Componente interno que maneja la navegación según el estado
 function InitialLayout() {
   const { session, isLoading } = useAuth();
   const segments = useSegments();
@@ -26,15 +25,14 @@ function InitialLayout() {
   return <Slot />;
 }
 
-// Layout principal que envuelve todo con el Provider
 export default function RootLayout() {
   return (
-    <ProfileProvider>
-      <SafeAreaProvider>
-        <AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <ProfileProvider>
           <InitialLayout />
-        </AuthProvider>
-      </SafeAreaProvider>
-    </ProfileProvider>
+        </ProfileProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }

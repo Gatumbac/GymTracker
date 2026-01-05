@@ -22,7 +22,6 @@ export default function Register() {
   const router = useRouter();
 
   const handleRegister = async () => {
-    // Validar datos antes de enviar
     const validationErrors = validateRegisterData({
       username,
       email,
@@ -36,7 +35,6 @@ export default function Register() {
       return;
     }
 
-    // Limpiar errores si la validación pasa
     setErrors({});
     setIsSubmitting(true);
     try {

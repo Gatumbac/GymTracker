@@ -18,7 +18,6 @@ export default function Login() {
   const router = useRouter();
 
   const handleLogin = async () => {
-    // Validar datos antes de enviar
     const validationErrors = validateLoginData({ username, password });
 
     if (Object.keys(validationErrors).length > 0) {
@@ -26,7 +25,6 @@ export default function Login() {
       return;
     }
 
-    // Limpiar errores si la validación pasa
     setErrors({});
     setIsSubmitting(true);
     try {

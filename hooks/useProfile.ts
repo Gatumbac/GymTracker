@@ -1,4 +1,3 @@
-// hooks/useProfile.ts
 import { ProfileContext } from '@/context/ProfileContext';
 import { useContext } from 'react';
 
