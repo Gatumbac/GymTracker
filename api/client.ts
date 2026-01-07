@@ -4,8 +4,8 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 let cachedToken: string | null = null;
 
 const apiClient = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_BASE_URL,
-  timeout: parseInt(process.env.EXPO_PUBLIC_API_TIMEOUT || '10000', 10),
+  baseURL: 'https://web-production-4572f.up.railway.app/api',
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
